@@ -11,13 +11,28 @@ from .indicators.base import IndicatorResult
 
 _MARK = {"BUY": "✅", "SELL": "🔻", "HOLD": "➖"}
 
+# Технически имена (r.name), останали на английски заради backtest скриптовете --
+# тук само за показване в Telegram превеждаме/изчистваме за четимост.
+_DISPLAY_NAME = {
+    "sma_ema_crossover": "SMA/EMA пресичане",
+    "rsi": "RSI",
+    "macd": "MACD",
+    "fia_trend_momentum": "FIA Тренд+Моментум",
+    "liquidity_sweep_reversal": "Liquidity Sweep",
+    "bollinger_bands": "Bollinger Bands",
+    "stochastic": "Stochastic",
+    "adx_dmi": "ADX/DMI",
+    "golden_cross": "Golden Cross",
+}
+
 
 def format_message(ticker: str, results: list[IndicatorResult]) -> str:
-    lines = [f"🟢 <b>BUY signal</b> — <code>{html.escape(ticker)}</code>", ""]
+    lines = [f"🟢 <b>BUY сигнал</b> — <code>{html.escape(ticker)}</code>", ""]
     for r in results:
-        lines.append(f"{_MARK[r.signal.value]} {html.escape(r.name)}: {html.escape(r.detail)}")
+        display_name = _DISPLAY_NAME.get(r.name, r.name)
+        lines.append(f"{_MARK[r.signal.value]} {html.escape(display_name)}: {html.escape(r.detail)}")
     lines.append("")
-    lines.append("<i>Not financial advice -- automated technical signal only.</i>")
+    lines.append("<i>Не е финансов съвет — само автоматичен технически сигнал.</i>")
     return "\n".join(lines)
 
 

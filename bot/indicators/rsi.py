@@ -24,13 +24,13 @@ class Rsi(Indicator):
 
     def evaluate(self, df: pd.DataFrame) -> IndicatorResult:
         if len(df) < self.period + 2:
-            return IndicatorResult(self.name, Signal.HOLD, "not enough data")
+            return IndicatorResult(self.name, Signal.HOLD, "недостатъчно данни")
 
         rsi = self._rsi_series(df["Close"])
         prev, curr = rsi.iloc[-2], rsi.iloc[-1]
 
         if prev <= self.oversold < curr:
-            return IndicatorResult(self.name, Signal.BUY, f"RSI left oversold ({curr:.1f})")
+            return IndicatorResult(self.name, Signal.BUY, f"RSI излезе от препродаденост ({curr:.1f})")
         if prev >= self.overbought > curr:
-            return IndicatorResult(self.name, Signal.SELL, f"RSI left overbought ({curr:.1f})")
+            return IndicatorResult(self.name, Signal.SELL, f"RSI излезе от превишена покупка ({curr:.1f})")
         return IndicatorResult(self.name, Signal.HOLD, f"RSI={curr:.1f}")

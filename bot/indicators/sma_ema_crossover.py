@@ -14,7 +14,7 @@ class SmaEmaCrossover(Indicator):
 
     def evaluate(self, df: pd.DataFrame) -> IndicatorResult:
         if len(df) < self.slow + 2:
-            return IndicatorResult(self.name, Signal.HOLD, "not enough data")
+            return IndicatorResult(self.name, Signal.HOLD, "недостатъчно данни")
 
         fast_ma = df["Close"].ewm(span=self.fast, adjust=False).mean()
         slow_ma = df["Close"].rolling(window=self.slow).mean()
@@ -23,7 +23,7 @@ class SmaEmaCrossover(Indicator):
         curr_diff = fast_ma.iloc[-1] - slow_ma.iloc[-1]
 
         if prev_diff <= 0 and curr_diff > 0:
-            return IndicatorResult(self.name, Signal.BUY, f"EMA{self.fast} crossed above SMA{self.slow}")
+            return IndicatorResult(self.name, Signal.BUY, f"EMA{self.fast} премина над SMA{self.slow}")
         if prev_diff >= 0 and curr_diff < 0:
-            return IndicatorResult(self.name, Signal.SELL, f"EMA{self.fast} crossed below SMA{self.slow}")
-        return IndicatorResult(self.name, Signal.HOLD, "no crossover")
+            return IndicatorResult(self.name, Signal.SELL, f"EMA{self.fast} падна под SMA{self.slow}")
+        return IndicatorResult(self.name, Signal.HOLD, "няма пресичане")

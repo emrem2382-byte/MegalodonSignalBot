@@ -19,7 +19,7 @@ class Stochastic(Indicator):
 
     def evaluate(self, df: pd.DataFrame) -> IndicatorResult:
         if len(df) < self.k_period + self.d_period + 2:
-            return IndicatorResult(self.name, Signal.HOLD, "not enough data")
+            return IndicatorResult(self.name, Signal.HOLD, "недостатъчно данни")
 
         low_n = df["Low"].rolling(self.k_period).min()
         high_n = df["High"].rolling(self.k_period).max()
@@ -34,8 +34,8 @@ class Stochastic(Indicator):
         bear_cross = k_prev >= d_prev and k_curr < d_curr
 
         if bull_cross and k_curr < self.oversold + 10:
-            return IndicatorResult(self.name, Signal.BUY, f"%K crossed above %D near oversold (K={k_curr:.1f})")
+            return IndicatorResult(self.name, Signal.BUY, f"%K премина над %D близо до препродаденост (K={k_curr:.1f})")
         if bear_cross and k_curr > self.overbought - 10:
-            return IndicatorResult(self.name, Signal.SELL, f"%K crossed below %D near overbought (K={k_curr:.1f})")
+            return IndicatorResult(self.name, Signal.SELL, f"%K падна под %D близо до превишена покупка (K={k_curr:.1f})")
 
         return IndicatorResult(self.name, Signal.HOLD, f"%K={k_curr:.1f}, %D={d_curr:.1f}")

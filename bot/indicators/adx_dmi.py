@@ -23,7 +23,7 @@ class AdxDmi(Indicator):
 
     def evaluate(self, df: pd.DataFrame) -> IndicatorResult:
         if len(df) < self.period * 3 + 5:
-            return IndicatorResult(self.name, Signal.HOLD, "not enough data")
+            return IndicatorResult(self.name, Signal.HOLD, "недостатъчно данни")
 
         high, low, close = df["High"], df["Low"], df["Close"]
         prev_high, prev_low, prev_close = high.shift(1), low.shift(1), close.shift(1)
@@ -54,9 +54,9 @@ class AdxDmi(Indicator):
         bear_cross = plus_prev >= minus_prev and plus_curr < minus_curr
 
         if bull_cross and adx_curr > self.adx_threshold:
-            return IndicatorResult(self.name, Signal.BUY, f"+DI crossed above -DI, ADX={adx_curr:.1f}")
+            return IndicatorResult(self.name, Signal.BUY, f"+DI премина над -DI, ADX={adx_curr:.1f}")
         if bear_cross and adx_curr > self.adx_threshold:
-            return IndicatorResult(self.name, Signal.SELL, f"-DI crossed above +DI, ADX={adx_curr:.1f}")
+            return IndicatorResult(self.name, Signal.SELL, f"-DI премина над +DI, ADX={adx_curr:.1f}")
 
         return IndicatorResult(
             self.name, Signal.HOLD,

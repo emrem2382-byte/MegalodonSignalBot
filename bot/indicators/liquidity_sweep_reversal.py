@@ -117,7 +117,7 @@ class LiquiditySweepReversal(Indicator):
     def evaluate(self, df: pd.DataFrame) -> IndicatorResult:
         min_bars = max(self.level_expiry_bars, self.volume_ma_period, self.atr_period) + self.pivot_bars * 2 + 5
         if len(df) < min_bars:
-            return IndicatorResult(self.name, Signal.HOLD, "not enough data")
+            return IndicatorResult(self.name, Signal.HOLD, "недостатъчно данни")
 
         atr = _atr(df, self.atr_period)
         volume_ma = df["Volume"].rolling(self.volume_ma_period).mean()
@@ -166,8 +166,8 @@ class LiquiditySweepReversal(Indicator):
             target = entry_price + risk * self.reward_risk_ratio
             return IndicatorResult(
                 self.name, Signal.BUY,
-                f"swept low {bullish_level:.2f} -> entry {entry_price:.2f}, "
-                f"SL {stop:.2f}, TP {target:.2f} (R:R {self.reward_risk_ratio:.1f})",
+                f"помитане на дъно {bullish_level:.2f} -> вход {entry_price:.2f}, "
+                f"стоп {stop:.2f}, цел {target:.2f} (R:R {self.reward_risk_ratio:.1f})",
             )
 
         if self.allow_short and bearish_level is not None:
@@ -176,8 +176,8 @@ class LiquiditySweepReversal(Indicator):
             target = entry_price - risk * self.reward_risk_ratio
             return IndicatorResult(
                 self.name, Signal.SELL,
-                f"swept high {bearish_level:.2f} -> entry {entry_price:.2f}, "
-                f"SL {stop:.2f}, TP {target:.2f} (R:R {self.reward_risk_ratio:.1f})",
+                f"помитане на връх {bearish_level:.2f} -> вход {entry_price:.2f}, "
+                f"стоп {stop:.2f}, цел {target:.2f} (R:R {self.reward_risk_ratio:.1f})",
             )
 
-        return IndicatorResult(self.name, Signal.HOLD, "no active sweep")
+        return IndicatorResult(self.name, Signal.HOLD, "няма активно помитане")

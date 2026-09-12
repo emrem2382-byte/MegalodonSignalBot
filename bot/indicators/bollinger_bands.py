@@ -28,7 +28,7 @@ class BollingerBands(Indicator):
     def evaluate(self, df: pd.DataFrame) -> IndicatorResult:
         min_bars = max(self.period, self.volume_ma_period) + 2
         if len(df) < min_bars:
-            return IndicatorResult(self.name, Signal.HOLD, "not enough data")
+            return IndicatorResult(self.name, Signal.HOLD, "недостатъчно данни")
 
         close = df["Close"]
         mid = close.rolling(self.period).mean()
@@ -48,10 +48,10 @@ class BollingerBands(Indicator):
         bearish_breakdown = prev_close >= prev_lower and curr_close < curr_lower and vol_ok
 
         if bullish_bounce or bullish_breakout:
-            reason = "volume breakout above upper band" if bullish_breakout else "bounce off lower band"
+            reason = "пробив над горната лента с обем" if bullish_breakout else "отскок от долната лента"
             return IndicatorResult(self.name, Signal.BUY, reason)
         if bearish_bounce or bearish_breakdown:
-            reason = "volume breakdown below lower band" if bearish_breakdown else "rejection off upper band"
+            reason = "пробив под долната лента с обем" if bearish_breakdown else "отхвърляне от горната лента"
             return IndicatorResult(self.name, Signal.SELL, reason)
 
         band_width = upper.iloc[-1] - lower.iloc[-1]

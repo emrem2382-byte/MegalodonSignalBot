@@ -15,7 +15,7 @@ class Macd(Indicator):
 
     def evaluate(self, df: pd.DataFrame) -> IndicatorResult:
         if len(df) < self.slow + self.signal_period + 2:
-            return IndicatorResult(self.name, Signal.HOLD, "not enough data")
+            return IndicatorResult(self.name, Signal.HOLD, "недостатъчно данни")
 
         close = df["Close"]
         ema_fast = close.ewm(span=self.fast, adjust=False).mean()
@@ -27,7 +27,7 @@ class Macd(Indicator):
         curr_diff = macd_line.iloc[-1] - signal_line.iloc[-1]
 
         if prev_diff <= 0 and curr_diff > 0:
-            return IndicatorResult(self.name, Signal.BUY, "MACD crossed above signal line")
+            return IndicatorResult(self.name, Signal.BUY, "MACD премина над сигналната линия")
         if prev_diff >= 0 and curr_diff < 0:
-            return IndicatorResult(self.name, Signal.SELL, "MACD crossed below signal line")
-        return IndicatorResult(self.name, Signal.HOLD, "no crossover")
+            return IndicatorResult(self.name, Signal.SELL, "MACD падна под сигналната линия")
+        return IndicatorResult(self.name, Signal.HOLD, "няма пресичане")

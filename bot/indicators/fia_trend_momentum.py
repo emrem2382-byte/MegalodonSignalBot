@@ -92,7 +92,7 @@ class FiaTrendMomentum(Indicator):
     def evaluate(self, df: pd.DataFrame) -> IndicatorResult:
         min_bars = self.ema_slow + self.macd_slow + self.macd_signal + 5
         if len(df) < min_bars:
-            return IndicatorResult(self.name, Signal.HOLD, "not enough data")
+            return IndicatorResult(self.name, Signal.HOLD, "недостатъчно данни")
 
         close = df["Close"]
         ema20 = _ema(close, self.ema_fast)
@@ -148,12 +148,18 @@ class FiaTrendMomentum(Indicator):
             and macd_bearish
         )
 
+        # structure е вътрешен код (green/blue/orange/red) -- тук само за показване на български
+        structure_bg = {"green": "зелен", "blue": "син", "orange": "оранжев", "red": "червен"}[structure]
+
         if bull_score >= self.min_score and (bullish_pullback or macd_bull_cross):
-            trigger = "pullback reclaim" if bullish_pullback else "MACD crossover"
-            return IndicatorResult(self.name, Signal.BUY, f"score {bull_score}/6, {structure}, {trigger}")
+            trigger = "връщане след корекция" if bullish_pullback else "MACD пресичане"
+            return IndicatorResult(self.name, Signal.BUY, f"score {bull_score}/6, {structure_bg} фон, {trigger}")
 
         if bear_score >= self.min_score and (bearish_pullback or macd_bear_cross):
-            trigger = "pullback breakdown" if bearish_pullback else "MACD crossover"
-            return IndicatorResult(self.name, Signal.SELL, f"score {bear_score}/6, {structure}, {trigger}")
+            trigger = "пробив надолу след корекция" if bearish_pullback else "MACD пресичане"
+            return IndicatorResult(self.name, Signal.SELL, f"score {bear_score}/6, {structure_bg} фон, {trigger}")
 
-        return IndicatorResult(self.name, Signal.HOLD, f"bull {bull_score}/6, bear {bear_score}/6, {structure}")
+        return IndicatorResult(
+            self.name, Signal.HOLD,
+            f"бичи {bull_score}/6, мечи {bear_score}/6, {structure_bg} фон",
+        )
