@@ -49,6 +49,45 @@ def _format_alert(ticker: str, label: str, level: float, current: float, entry: 
     return "\n".join(lines)
 
 
+def compute_auto_levels(df: pd.DataFrame) -> dict | None:
+    """Generic, conservative default levels for a just-fired BUY signal
+    (not tuned per indicator/strategy):
+      - entry_price   = today's close
+      - stop_loss     = 20-day low (recent support)
+      - take_profit   = SMA20 (Bollinger mid-band -- typical bounce target)
+
+    Returns None if there isn't enough history, or the levels don't form a
+    sane risk/reward shape (e.g. target already below entry).
+    """
+    if len(df) < 20:
+        return None
+
+    entry_price = float(df["Close"].iloc[-1])
+    stop_loss = float(df["Low"].iloc[-20:].min())
+    take_profit = float(df["Close"].iloc[-20:].mean())
+
+    if not (stop_loss < entry_price < take_profit):
+        return None
+
+    return {
+        "entry_price": round(entry_price, 2),
+        "stop_loss": round(stop_loss, 2),
+        "take_profit": round(take_profit, 2),
+        "auto": True,  # marks this as bot-generated, vs. a hand-edited entry
+    }
+
+
+def auto_track(ticker: str, levels: dict | None, tracked: dict) -> bool:
+    """Adds `levels` to `tracked` under `ticker`, unless it's already being
+    watched (never clobber a possibly hand-tuned entry) or levels is None.
+    Mutates `tracked` in place; returns True if a position was added.
+    """
+    if levels is None or ticker in tracked:
+        return False
+    tracked[ticker] = levels
+    return True
+
+
 def check_positions(
     positions: dict, fetch_history: Callable[[str], pd.DataFrame]
 ) -> tuple[dict, list[str]]:

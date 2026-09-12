@@ -26,12 +26,19 @@ _DISPLAY_NAME = {
 }
 
 
-def format_message(ticker: str, results: list[IndicatorResult]) -> str:
+def format_message(ticker: str, results: list[IndicatorResult], auto_levels: dict | None) -> str:
     lines = [f"🟢 <b>BUY сигнал</b> — <code>{html.escape(ticker)}</code>", ""]
     for r in results:
         display_name = _DISPLAY_NAME.get(r.name, r.name)
         lines.append(f"{_MARK[r.signal.value]} {html.escape(display_name)}: {html.escape(r.detail)}")
     lines.append("")
+    if auto_levels:
+        lines.append(
+            f"📍 Автоматично следене: вход {auto_levels['entry_price']:.2f}, "
+            f"стоп {auto_levels['stop_loss']:.2f}, цел {auto_levels['take_profit']:.2f}"
+        )
+        lines.append("<i>Ще получиш известие, ако цената пробие стопа или целта.</i>")
+        lines.append("")
     lines.append("<i>Не е финансов съвет — само автоматичен технически сигнал.</i>")
     return "\n".join(lines)
 
@@ -43,6 +50,18 @@ def main() -> None:
         return
 
     signal_state = state.load_state()
+    tracked_positions = positions.load_positions()
+
+    # 1. Check positions tracked from earlier scans BEFORE this scan can add
+    #    new ones -- a position should never be checked on the same bar it
+    #    was created on.
+    tracked_positions, position_alerts = positions.check_positions(tracked_positions, data.fetch_history)
+    for msg in position_alerts:
+        telegram.send_message(msg)
+    if position_alerts:
+        print(f"[main] {len(position_alerts)} position alert(s) sent")
+
+    # 2. Scan for new BUY signals, auto-tracking each one that fires.
     sent = 0
 
     for i, ticker in enumerate(tickers):
@@ -62,33 +81,22 @@ def main() -> None:
             print(f"[main] {ticker}: BUY already sent today, skipping")
             continue
 
-        if telegram.send_message(format_message(ticker, results)):
+        auto_levels = positions.compute_auto_levels(df) if ticker not in tracked_positions else None
+        message = format_message(ticker, results, auto_levels)
+
+        if telegram.send_message(message):
             state.mark_signaled(signal_state, ticker, "buy")
             sent += 1
             print(f"[main] {ticker}: BUY signal sent")
+            if positions.auto_track(ticker, auto_levels, tracked_positions):
+                print(f"[main] {ticker}: auto-tracking (entry {auto_levels['entry_price']}, "
+                      f"SL {auto_levels['stop_loss']}, TP {auto_levels['take_profit']})")
         else:
             print(f"[main] {ticker}: BUY signal detected but Telegram send failed, will retry next scan")
 
     state.save_state(signal_state)
+    positions.save_positions(tracked_positions)
     print(f"[main] scan complete, {sent} signal(s) sent, {len(tickers)} ticker(s) checked")
-
-    check_tracked_positions()
-
-
-def check_tracked_positions() -> None:
-    """Alerts on any tracked position (data/positions.json) whose stop-loss
-    or take-profit was hit today, then drops it from the file.
-    """
-    tracked = positions.load_positions()
-    if not tracked:
-        return
-
-    remaining, alerts = positions.check_positions(tracked, data.fetch_history)
-    for msg in alerts:
-        telegram.send_message(msg)
-    positions.save_positions(remaining)
-    if alerts:
-        print(f"[main] {len(alerts)} position alert(s) sent")
 
 
 if __name__ == "__main__":
