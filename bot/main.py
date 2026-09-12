@@ -5,7 +5,7 @@ Run in CI with:      see .github/workflows/signals.yml
 """
 import html
 
-from . import config, data, state, telegram
+from . import config, data, positions, state, telegram
 from .engine import evaluate_ticker
 from .indicators.base import IndicatorResult
 
@@ -71,6 +71,24 @@ def main() -> None:
 
     state.save_state(signal_state)
     print(f"[main] scan complete, {sent} signal(s) sent, {len(tickers)} ticker(s) checked")
+
+    check_tracked_positions()
+
+
+def check_tracked_positions() -> None:
+    """Alerts on any tracked position (data/positions.json) whose stop-loss
+    or take-profit was hit today, then drops it from the file.
+    """
+    tracked = positions.load_positions()
+    if not tracked:
+        return
+
+    remaining, alerts = positions.check_positions(tracked, data.fetch_history)
+    for msg in alerts:
+        telegram.send_message(msg)
+    positions.save_positions(remaining)
+    if alerts:
+        print(f"[main] {len(alerts)} position alert(s) sent")
 
 
 if __name__ == "__main__":
