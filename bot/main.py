@@ -3,6 +3,8 @@
 Run locally with:   python -m bot.main
 Run in CI with:      see .github/workflows/signals.yml
 """
+import html
+
 from . import config, data, state, telegram
 from .engine import evaluate_ticker
 from .indicators.base import IndicatorResult
@@ -11,11 +13,11 @@ _MARK = {"BUY": "✅", "SELL": "🔻", "HOLD": "➖"}
 
 
 def format_message(ticker: str, results: list[IndicatorResult]) -> str:
-    lines = [f"🟢 *BUY signal* — `{ticker}`", ""]
+    lines = [f"🟢 <b>BUY signal</b> — <code>{html.escape(ticker)}</code>", ""]
     for r in results:
-        lines.append(f"{_MARK[r.signal.value]} {r.name}: {r.detail}")
+        lines.append(f"{_MARK[r.signal.value]} {html.escape(r.name)}: {html.escape(r.detail)}")
     lines.append("")
-    lines.append("_Not financial advice -- automated technical signal only._")
+    lines.append("<i>Not financial advice -- automated technical signal only.</i>")
     return "\n".join(lines)
 
 
@@ -45,10 +47,12 @@ def main() -> None:
             print(f"[main] {ticker}: BUY already sent today, skipping")
             continue
 
-        telegram.send_message(format_message(ticker, results))
-        state.mark_signaled(signal_state, ticker, "buy")
-        sent += 1
-        print(f"[main] {ticker}: BUY signal sent")
+        if telegram.send_message(format_message(ticker, results)):
+            state.mark_signaled(signal_state, ticker, "buy")
+            sent += 1
+            print(f"[main] {ticker}: BUY signal sent")
+        else:
+            print(f"[main] {ticker}: BUY signal detected but Telegram send failed, will retry next scan")
 
     state.save_state(signal_state)
     print(f"[main] scan complete, {sent} signal(s) sent, {len(tickers)} ticker(s) checked")
