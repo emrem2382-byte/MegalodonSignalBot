@@ -1,0 +1,14 @@
+# Symbols pinned here are ALWAYS kept in config/tickers.txt, even though
+# they're not in the S&P 500 / Nasdaq-100 and would otherwise be dropped
+# when scripts/update_universe.py refreshes the list.
+#
+# Use this for anything on Revolut you specifically want tracked that
+# doesn't happen to be a large-cap index member (small/mid caps, recent
+# IPOs, etc). One symbol per line, '#' comments allowed.
+#
+# Examples (uncomment to enable):
+# RIVN
+# LCID
+# SOFI
+# COIN
+# PLTR
