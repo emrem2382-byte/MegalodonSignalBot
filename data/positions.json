@@ -1,16 +1,4 @@
 {
-  "CPT": {
-    "auto": true,
-    "entry_price": 103.01,
-    "stop_loss": 102.09,
-    "take_profit": 106.5
-  },
-  "CRL": {
-    "auto": true,
-    "entry_price": 278.26,
-    "stop_loss": 272.06,
-    "take_profit": 287.82
-  },
   "LIN": {
     "auto": true,
     "entry_price": 466.22,
