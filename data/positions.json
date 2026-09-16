@@ -1,10 +1,4 @@
 {
-  "BKR": {
-    "auto": true,
-    "entry_price": 56.91,
-    "stop_loss": 56.03,
-    "take_profit": 61.77
-  },
   "CMS": {
     "auto": true,
     "entry_price": 66.46,
@@ -29,12 +23,6 @@
     "stop_loss": 65.91,
     "take_profit": 67.97
   },
-  "PEG": {
-    "auto": true,
-    "entry_price": 70.71,
-    "stop_loss": 70.14,
-    "take_profit": 72.6
-  },
   "ROL": {
     "auto": true,
     "entry_price": 34.19,
@@ -46,11 +34,5 @@
     "entry_price": 98.07,
     "stop_loss": 96.04,
     "take_profit": 103.8
-  },
-  "TDG": {
-    "auto": true,
-    "entry_price": 1097.85,
-    "stop_loss": 1082.01,
-    "take_profit": 1160.4
   }
 }
