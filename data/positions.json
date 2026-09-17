@@ -23,12 +23,6 @@
     "stop_loss": 65.8,
     "take_profit": 67.95
   },
-  "MAA": {
-    "auto": true,
-    "entry_price": 122.55,
-    "stop_loss": 121.32,
-    "take_profit": 128.06
-  },
   "NEE": {
     "auto": true,
     "entry_price": 80.85,
