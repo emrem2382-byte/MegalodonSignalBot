@@ -28,11 +28,5 @@
     "entry_price": 80.85,
     "stop_loss": 79.96,
     "take_profit": 82.69
-  },
-  "SBUX": {
-    "auto": true,
-    "entry_price": 98.07,
-    "stop_loss": 96.04,
-    "take_profit": 103.8
   }
 }
