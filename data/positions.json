@@ -11,6 +11,12 @@
     "stop_loss": 48.93,
     "take_profit": 53.71
   },
+  "EXE": {
+    "auto": true,
+    "entry_price": 87.65,
+    "stop_loss": 85.29,
+    "take_profit": 95.22
+  },
   "GE": {
     "auto": true,
     "entry_price": 310.04,
