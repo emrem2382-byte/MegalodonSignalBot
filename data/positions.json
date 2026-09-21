@@ -1,9 +1,15 @@
 {
-  "ES": {
+  "BAC": {
     "auto": true,
-    "entry_price": 67.56,
-    "stop_loss": 67.06,
-    "take_profit": 70.31
+    "entry_price": 58.15,
+    "stop_loss": 57.18,
+    "take_profit": 61.06
+  },
+  "EQT": {
+    "auto": true,
+    "entry_price": 50.18,
+    "stop_loss": 48.93,
+    "take_profit": 53.71
   },
   "GE": {
     "auto": true,
@@ -11,10 +17,10 @@
     "stop_loss": 306.8,
     "take_profit": 334.5
   },
-  "NEE": {
+  "NCLH": {
     "auto": true,
-    "entry_price": 80.85,
-    "stop_loss": 79.96,
-    "take_profit": 82.69
+    "entry_price": 14.41,
+    "stop_loss": 14.07,
+    "take_profit": 15.46
   }
 }
